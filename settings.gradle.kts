@@ -1,2 +1,2 @@
 rootProject.name = "saga"
-include("order", "payment")
+include("order", "payment", "common")
