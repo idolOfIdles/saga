@@ -3,7 +3,7 @@ package com.saga.config
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.saga.enums.SagaEvents
-import com.saga.model.SagaEvent
+import com.saga.events.SagaEvent
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.springframework.beans.factory.annotation.Value

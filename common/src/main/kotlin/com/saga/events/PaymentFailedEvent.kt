@@ -1,4 +1,4 @@
-package com.saga.model
+package com.saga.events
 
 import com.saga.enums.SagaEvents
 

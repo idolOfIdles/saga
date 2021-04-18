@@ -1,15 +1,17 @@
 package com.saga.service
 
-import com.saga.model.Payment
-import com.saga.model.PaymentSuccessfulEvent
-import com.saga.model.SagaEvent
+import com.saga.entity.Payment
+import com.saga.events.PaymentSuccessfulEvent
+import com.saga.events.SagaEvent
+import com.saga.repository.PaymentRepository
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Service
 
 @Service
-class PaymentService(val kafkaTemplate: KafkaTemplate<String, SagaEvent>) {
+class PaymentService(val kafkaTemplate: KafkaTemplate<String, SagaEvent>, val paymentRepository: PaymentRepository) {
 
     fun makePayment(payment: Payment){
-        kafkaTemplate.send("sagaEvent", PaymentSuccessfulEvent.convert(payment))
+        val saved = paymentRepository.insert(payment)
+        kafkaTemplate.send("sagaEvent", PaymentSuccessfulEvent(payment.orderID, saved.transactionId!!, payment.userId))
     }
 }

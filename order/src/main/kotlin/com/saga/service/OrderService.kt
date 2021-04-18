@@ -1,16 +1,17 @@
 package com.saga.service
 
-import com.saga.model.Order
-import com.saga.model.OrderCreateEvent
-import com.saga.model.SagaEvent
+import com.saga.entity.Order
+import com.saga.events.OrderCreateEvent
+import com.saga.events.SagaEvent
+import com.saga.repository.OrderRepository
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Service
 
 @Service
-class OrderService(val kafkaTemplate: KafkaTemplate<String, SagaEvent>) {
+class OrderService(val  orderRepository: OrderRepository, val kafkaTemplate: KafkaTemplate<String, SagaEvent>) {
 
     fun createOrder(order: Order){
-        val sagaEvent: SagaEvent = OrderCreateEvent.convertToCreateEvent(order)
-        kafkaTemplate.send("sagaEvent", sagaEvent)
+        val saved = orderRepository.insert(order)
+        kafkaTemplate.send("sagaEvent", OrderCreateEvent(saved.orderId!!, order.itemId,order.userId))
     }
 }

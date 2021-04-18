@@ -1,6 +1,6 @@
 package com.saga.controller
 
-import com.saga.model.Order
+import com.saga.entity.Order
 import com.saga.service.OrderService
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody

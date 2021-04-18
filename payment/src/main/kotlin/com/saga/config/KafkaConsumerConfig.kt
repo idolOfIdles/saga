@@ -3,9 +3,9 @@ package com.saga.config
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.saga.enums.SagaEvents
-import com.saga.model.OrderCreateEvent
-import com.saga.model.Payment
-import com.saga.model.SagaEvent
+import com.saga.events.OrderCreateEvent
+import com.saga.entity.Payment
+import com.saga.events.SagaEvent
 import com.saga.service.PaymentService
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.StringDeserializer
@@ -57,7 +57,7 @@ class KafkaConsumerConfig(val paymentService: PaymentService) {
         println(sagaEvent)
         // process greeting message
         val order = sagaEvent as OrderCreateEvent
-        paymentService.makePayment(Payment(order.orderId, "1"))
+        paymentService.makePayment(Payment(null, order.orderId, order.userId))
 
     }
 }

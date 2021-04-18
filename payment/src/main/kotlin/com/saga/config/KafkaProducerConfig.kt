@@ -1,6 +1,6 @@
 package com.saga.config
 
-import com.saga.model.SagaEvent
+import com.saga.events.SagaEvent
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.serialization.StringSerializer
 import org.springframework.beans.factory.annotation.Value
