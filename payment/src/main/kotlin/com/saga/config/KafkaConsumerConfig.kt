@@ -56,8 +56,15 @@ class KafkaConsumerConfig(val paymentService: PaymentService) {
     fun greetingListener(sagaEvent: SagaEvent) {
         println(sagaEvent)
         // process greeting message
-        val order = sagaEvent as OrderCreateEvent
-        paymentService.makePayment(Payment(null, order.orderId, order.userId))
+        when(sagaEvent.getEvent()){
+            SagaEvents.ORDER_CREATED -> {
+                val order = sagaEvent as OrderCreateEvent
+                paymentService.makePayment(Payment(null, order.orderId, order.userId, SagaEvents.PAYMENT_SUCCESSFUL))
+            }
+        }
+
+
+
 
     }
 }

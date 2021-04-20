@@ -3,7 +3,11 @@ package com.saga.config
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.saga.enums.SagaEvents
+import com.saga.events.OrderCompletedEvent
+import com.saga.events.PaymentFailedEvent
+import com.saga.events.PaymentSuccessfulEvent
 import com.saga.events.SagaEvent
+import com.saga.service.OrderService
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.springframework.beans.factory.annotation.Value
@@ -17,7 +21,7 @@ import org.springframework.kafka.support.serializer.JsonDeserializer
 
 
 @Configuration
-class KafkaConsumerConfig {
+class KafkaConsumerConfig(val orderService: OrderService) {
 
     @Value("\${kafka.bootstrapAddress}")
     private var brokerAddress = ""
@@ -44,7 +48,7 @@ class KafkaConsumerConfig {
     fun kafkaListenerContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, SagaEvent> {
         val factory: ConcurrentKafkaListenerContainerFactory<String, SagaEvent> = ConcurrentKafkaListenerContainerFactory<String, SagaEvent>()
         factory.consumerFactory = greetingConsumerFactory()
-        factory.setRecordFilterStrategy { r-> listOf(SagaEvents.ORDER_CREATED, SagaEvents.ORDER_CANCELLED).any { it == r.value().getEvent() } }
+        factory.setRecordFilterStrategy { r-> listOf(SagaEvents.ORDER_CREATED, SagaEvents.ORDER_CANCELLED, SagaEvents.ORDER_COMPLETED).any { it == r.value().getEvent() } }
         return factory
     }
 
@@ -53,6 +57,12 @@ class KafkaConsumerConfig {
     fun greetingListener(greeting: SagaEvent) {
         // process greeting message
         println(greeting)
+        when(greeting.getEvent()){
+            SagaEvents.PAYMENT_SUCCESSFUL -> orderService.updateStatus((greeting as PaymentSuccessfulEvent).orderId, SagaEvents.ORDER_COMPLETED)
+            SagaEvents.PAYMENT_FAILED -> orderService.updateStatus((greeting as PaymentFailedEvent).orderId, SagaEvents.ORDER_CANCELLED)
+        }
+
+
     }
 }
 
